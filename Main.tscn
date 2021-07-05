@@ -1,0 +1,105 @@
+[gd_scene load_steps=14 format=2]
+
+[ext_resource path="res://Main.gd" type="Script" id=1]
+[ext_resource path="res://Mario.tscn" type="PackedScene" id=2]
+[ext_resource path="res://Waluigi.tscn" type="PackedScene" id=3]
+[ext_resource path="res://audio/House In a Forest Loop.ogg" type="AudioStream" id=5]
+[ext_resource path="res://Screens.tscn" type="PackedScene" id=6]
+[ext_resource path="res://art/concrete_floor.jpg" type="Texture" id=7]
+[ext_resource path="res://art/barbed-wire.png" type="Texture" id=8]
+[ext_resource path="res://Prison.gd" type="Script" id=9]
+
+[sub_resource type="PhysicsMaterial" id=1]
+friction = 0.0
+bounce = 1.0
+
+[sub_resource type="RectangleShape2D" id=2]
+extents = Vector2( 200, 25 )
+
+[sub_resource type="RectangleShape2D" id=3]
+extents = Vector2( 15, 175 )
+
+[sub_resource type="RectangleShape2D" id=4]
+extents = Vector2( 15, 175 )
+
+[sub_resource type="RectangleShape2D" id=5]
+extents = Vector2( 200, 25 )
+
+[node name="Main" type="Node"]
+script = ExtResource( 1 )
+
+[node name="ColorRect" type="ColorRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color( 0.0431373, 0.317647, 0.0470588, 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ScoreTimer" type="Timer" parent="."]
+
+[node name="StartTimer" type="Timer" parent="."]
+wait_time = 2.0
+one_shot = true
+
+[node name="Music" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 5 )
+
+[node name="Waluigi" parent="." instance=ExtResource( 3 )]
+
+[node name="StartPosition" type="Position2D" parent="."]
+position = Vector2( 240, 350 )
+
+[node name="Mario" parent="." instance=ExtResource( 2 )]
+collision_layer = 0
+collision_mask = 0
+
+[node name="Prison" type="Sprite" parent="."]
+position = Vector2( 300, 300 )
+texture = ExtResource( 7 )
+script = ExtResource( 9 )
+
+[node name="StaticBody2D" type="StaticBody2D" parent="Prison"]
+collision_layer = 2
+collision_mask = 2
+physics_material_override = SubResource( 1 )
+
+[node name="top" type="CollisionShape2D" parent="Prison/StaticBody2D"]
+position = Vector2( 0, -200 )
+shape = SubResource( 2 )
+
+[node name="Sprite" type="Sprite" parent="Prison/StaticBody2D/top"]
+scale = Vector2( 0.68, 1 )
+texture = ExtResource( 8 )
+
+[node name="left" type="CollisionShape2D" parent="Prison/StaticBody2D"]
+position = Vector2( -200, 0 )
+shape = SubResource( 3 )
+
+[node name="Sprite" type="Sprite" parent="Prison/StaticBody2D/left"]
+rotation = 1.5708
+scale = Vector2( 0.68, 1 )
+texture = ExtResource( 8 )
+
+[node name="right" type="CollisionShape2D" parent="Prison/StaticBody2D"]
+position = Vector2( 200, 0 )
+shape = SubResource( 4 )
+
+[node name="Sprite" type="Sprite" parent="Prison/StaticBody2D/right"]
+rotation = -1.5708
+scale = Vector2( 0.68, 1 )
+texture = ExtResource( 8 )
+
+[node name="bottom" type="CollisionShape2D" parent="Prison/StaticBody2D"]
+position = Vector2( 0, 200 )
+shape = SubResource( 5 )
+
+[node name="Sprite" type="Sprite" parent="Prison/StaticBody2D/bottom"]
+scale = Vector2( 0.68, 1 )
+texture = ExtResource( 8 )
+
+[node name="Screens" parent="." instance=ExtResource( 6 )]
+
+[connection signal="timeout" from="ScoreTimer" to="." method="_on_ScoreTimer_timeout"]
+[connection signal="timeout" from="StartTimer" to="." method="_on_StartTimer_timeout"]
+[connection signal="full_damage" from="Waluigi" to="." method="game_over"]
